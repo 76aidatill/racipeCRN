@@ -1,0 +1,14 @@
+Package: racipeCRN
+Title: Random Circuit Perturbation for Chemical Reaction Networks
+Version: 0.0.0.9000
+Authors@R: 
+    person("Aidan", "Tillman", , "aidan.tillman18@gmail.com", role = c("aut", "cre"))
+Description: What the package does (one paragraph).
+License: MIT + file LICENSE
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.3.2
+LinkingTo: Rcpp
+Imports: ggplot2, S4Vectors, xml2
+Depends: R (>= 3.5.0), SummarizedExperiment, Rcpp, methods
+LazyData: true
