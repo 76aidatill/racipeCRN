@@ -6,8 +6,8 @@
 \usage{
 addReaction(
   network,
-  reactants,
-  products,
+  reactants = NULL,
+  products = NULL,
   reversible = FALSE,
   reactionName = NULL
 )
@@ -16,13 +16,15 @@ addReaction(
 \item{network}{xml_document. An SBML file which defines the chemical reaction
 network. It should have been originally created with \code{makeNetwork}.}
 
-\item{reactants}{Named Integer vector. Each element specifies the
-stoichiometric coefficient of a reactant in the reaction, and the name of the
-element specifies the name of the reactant species.}
+\item{reactants}{Named Integer vector. Default \code{NULL}.
+Each element specifies the stoichiometric coefficient of a reactant in the
+reaction, and the name of the element specifies the name of the reactant
+species. If not included, the reaction is assumed to have no reactants.}
 
-\item{products}{Named Integer vector. Each element specifies the
-stoichiometric coefficient of a product in the reaction, and the name of the
-element specifies the name of the product species.}
+\item{products}{Named Integer vector. Default \code{NULL}. Each element
+specifies the stoichiometric coefficient of a product in the reaction, and
+the name of the element specifies the name of the product species. If not
+included, the reaction is presumed to have no products.}
 
 \item{reversible}{(optional) Logical. Default FALSE. Whether or not the input
 reaction is reversible.}
@@ -42,7 +44,7 @@ defined by the \code{makeNetwork} function. The reactions are added in a way
 that keeps the model xml object completely compatible with System Biology
 Markup Language (SBML) Level 3, Version 2. Kinetic laws are not included in
 SBML file as in crnRACIPE, all reactions are assumed to follow mass-action
-kinetics.
+kinetics. The reaction must include at least one product or reactant.
 }
 \section{Related Functions}{
 

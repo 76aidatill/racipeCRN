@@ -7,3 +7,4 @@
 #' whether or not to integrate the initial conditions (integrate).
 #' @format List of vectors
 "configData"
+

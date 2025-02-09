@@ -3,7 +3,8 @@
 #' @import SummarizedExperiment
 #' @title cRacipeSE
 #' @description An S4 class for Random Circuit Perturbation (RACIPE)
-#' simulations of networks. Extends the \link{SummarizedExperiment} class.
+#' simulations of chemical reaction networks.
+#' Extends the \link{SummarizedExperiment} class.
 #'
 #'
 .cRacipeSE <- setClass("cRacipeSE",

@@ -44,15 +44,17 @@ makeNetwork <- function(netName){
 #' that keeps the model xml object completely compatible with System Biology
 #' Markup Language (SBML) Level 3, Version 2. Kinetic laws are not included in
 #' SBML file as in crnRACIPE, all reactions are assumed to follow mass-action
-#' kinetics.
+#' kinetics. The reaction must include at least one product or reactant.
 #' @param network xml_document. An SBML file which defines the chemical reaction
 #' network. It should have been originally created with \code{makeNetwork}.
-#' @param reactants Named Integer vector. Each element specifies the
-#' stoichiometric coefficient of a reactant in the reaction, and the name of the
-#' element specifies the name of the reactant species.
-#' @param products Named Integer vector. Each element specifies the
-#' stoichiometric coefficient of a product in the reaction, and the name of the
-#' element specifies the name of the product species.
+#' @param reactants Named Integer vector. Default \code{NULL}.
+#' Each element specifies the stoichiometric coefficient of a reactant in the
+#' reaction, and the name of the element specifies the name of the reactant
+#' species. If not included, the reaction is assumed to have no reactants.
+#' @param products Named Integer vector. Default \code{NULL}. Each element
+#' specifies the stoichiometric coefficient of a product in the reaction, and
+#' the name of the element specifies the name of the product species. If not
+#' included, the reaction is presumed to have no products.
 #' @param reversible (optional) Logical. Default FALSE. Whether or not the input
 #' reaction is reversible.
 #' @param reactionName (optional) Character. Default NULL. The ID of the
@@ -73,8 +75,8 @@ makeNetwork <- function(netName){
 #'
 #' \code{\link{makeNetwork}}
 #'
-addReaction <- function(network, reactants, products, reversible = FALSE,
-                        reactionName = NULL){
+addReaction <- function(network, reactants = NULL, products = NULL,
+                        reversible = FALSE, reactionName = NULL){
   # Check if listOfSpecies and listOfReactions exist, add if not
   model_node <- xml_find_first(network, "./model")
   if(is.na(xml_find_first(model_node, "./listOfSpecies"))){
@@ -91,8 +93,12 @@ addReaction <- function(network, reactants, products, reversible = FALSE,
   # Add new species to listOfSpecies
   reactantNames <- names(reactants)
   productNames <- names(products)
-  if(is.null(reactantNames) || is.null(productNames)){
-    message("Error: reactants or products are missing names")
+  if(is.null(reactantNames) && !(is.null(reactants))){
+    message("Error: reactants are missing names")
+    return()
+  }
+  if(is.null(productNames) && !(is.null(products))){
+    message("Error: products are missing names")
     return()
   }
   reactionSpecies <- c(reactantNames, productNames)

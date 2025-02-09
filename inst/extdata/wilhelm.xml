@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sbml xmlns="http://www.sbml.org/sbml/level3/version2/core" version="2" level="3">
+  <model id="wilhelm">
+    <listOfCompartments>
+      <compartment id="cell" constant="true"/>
+    </listOfCompartments>
+    <listOfSpecies>
+      <species id="Y" compartment="cell" hasOnlySubstanceUnits="false" boundaryCondition="false" constant="false"/>
+      <species id="X" compartment="cell" hasOnlySubstanceUnits="false" boundaryCondition="false" constant="false"/>
+    </listOfSpecies>
+    <listOfReactions>
+      <reaction id="R1" reversible="false">
+        <listOfReactants>
+          <speciesReference species="Y" stoichiometry="1" constant="false"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X" stoichiometry="2" constant="false"/>
+        </listOfProducts>
+      </reaction>
+      <reaction id="R2" reversible="false">
+        <listOfReactants>
+          <speciesReference species="X" stoichiometry="2" constant="false"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="X" stoichiometry="1" constant="false"/>
+          <speciesReference species="Y" stoichiometry="1" constant="false"/>
+        </listOfProducts>
+      </reaction>
+      <reaction id="R3" reversible="false">
+        <listOfReactants>
+          <speciesReference species="X" stoichiometry="1" constant="false"/>
+          <speciesReference species="Y" stoichiometry="1" constant="false"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="Y" stoichiometry="1" constant="false"/>
+        </listOfProducts>
+      </reaction>
+      <reaction id="R4" reversible="false">
+        <listOfReactants>
+          <speciesReference species="X" stoichiometry="1" constant="false"/>
+        </listOfReactants>
+        <listOfProducts/>
+      </reaction>
+    </listOfReactions>
+  </model>
+</sbml>
