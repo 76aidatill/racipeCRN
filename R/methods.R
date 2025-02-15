@@ -7,8 +7,8 @@ setMethod(f="cracipeNetwork",
           definition=function(.object)
           {
             stoichMatrix <- as.matrix(rowData(.object))
-            rateVector <- metadata(.object)$rateVector
-            return(list(stoichMatrix, rateVector))
+            reactantMatrix <- metadata(.object)$reactantMatrix
+            return(list(stoichMatrix, reactantMatrix))
           }
 )
 
@@ -37,54 +37,55 @@ setMethod("cracipeNetwork<-", signature(.object= "cRacipeSE"),
 
               reactionNodes <- xml_find_all(listOfReactions, "./reaction")
               reactionIDs <- xml_attr(reactionNodes, "id")
-              nReactions <- length(reactionIDs)
+              numReactions <- length(reactionIDs)
 
-              rateVector <- list()
-
-              #Build Stoichiometry matrix
-              stoichMatrix <- matrix(data = 0L, nrow = nSpecies, ncol = nReactions)
+              #Build Stoichiometry matrix and Reactant Matrix
+              stoichMatrix <- matrix(data = 0L, nrow = nSpecies, ncol = numReactions)
               rownames(stoichMatrix) <- speciesIDs
               colnames(stoichMatrix) <- reactionIDs
+              reactantMatrix <- stoichMatrix
 
               for(reactionNode in reactionNodes){
-                kinetics <- character()
-                #Only used in reversible reactions
-                revKinetics <- character()
                 reactionID <- xml_attr(reactionNode, "id")
                 isReversible <- as.logical(xml_attr(reactionNode, "reversible"))
                 listOfProducts <- xml_find_first(reactionNode, "./listOfProducts")
                 productNodes <- xml_find_all(listOfProducts, "./speciesReference")
+
+                if(isReversible){
+                  revName <- paste0(reactionID, "Rev")
+                  revReactant <- reactantMatrix[, reactionID, drop=FALSE]
+                  colnames(revReactant) <- revName
+                  numReactions <- numReactions + 1
+                }
 
                 for(speciesRef in productNodes){
                   speciesName <- xml_attr(speciesRef, "species")
                   speciesStoich <- xml_attr(speciesRef, "stoichiometry")
                   stoichMatrix[speciesName, reactionID] <- (stoichMatrix[speciesName, reactionID]
                                                             + as.numeric(speciesStoich))
-                  revKinetics <- c(revKinetics, replicate(as.numeric(speciesStoich),
-                                                          speciesName))
+                  if(isReversible){
+                    revReactant[speciesName, revName] <- (revReactant[speciesName, revName] +
+                                                            as.numeric(speciesStoich))
+                  }
                 }
 
                 listOfReactants <- xml_find_first(reactionNode, "./listOfReactants")
                 reactantNodes <- xml_find_all(listOfReactants, "./speciesReference")
+
                 for(speciesRef in reactantNodes){
                   speciesName <- xml_attr(speciesRef, "species")
                   speciesStoich <- xml_attr(speciesRef, "stoichiometry")
                   stoichMatrix[speciesName, reactionID] <- (stoichMatrix[speciesName, reactionID]
                                                             - as.numeric(speciesStoich))
-                  kinetics <- c(kinetics, replicate(as.numeric(speciesStoich),
-                                                    speciesName))
+                  reactantMatrix[speciesName, reactionID] <- (reactantMatrix[speciesName, reactionID]
+                                                            + as.numeric(speciesStoich))
                 }
 
-                rateVector[[reactionID]] <- kinetics
-
                 if(isReversible){
-                  revName <- paste0(reactionID, "Rev")
                   revStoich <- -stoichMatrix[, reactionID, drop=FALSE]
                   colnames(revStoich) <- revName
                   stoichMatrix <- cbind(stoichMatrix, revStoich)
-
-                  rateVector[[revName]] <- revKinetics
-                  nReactions <- nReactions + 1
+                  reactantMatrix <- cbind(reactantMatrix, revReactant)
                 }
               }
             }else if(is(value, "character")){
@@ -93,7 +94,7 @@ setMethod("cracipeNetwork<-", signature(.object= "cRacipeSE"),
                 netID <- tools::file_path_sans_ext(netID)
 
                 con <- file(value, "r")
-                nReactions <- length(utils::count.fields(value, sep = "\n"))
+                numReactions <- length(utils::count.fields(value, sep = "\n"))
 
                 reactionList <- list()
                 reactNum <- 0
@@ -106,7 +107,7 @@ setMethod("cracipeNetwork<-", signature(.object= "cRacipeSE"),
                   reactNum <- reactNum + 1
 
                   reversible <- grepl("<->", reaction, fixed = TRUE)
-                  if(reversible) {nReactions <- nReactions + 1}
+                  if(reversible) {numReactions <- numReactions + 1}
                   delimiter <- if (reversible) "<->" else "->"
                   parts <- strsplit(reaction, delimiter)[[1]]
                   #handle case of no products
@@ -143,38 +144,30 @@ setMethod("cracipeNetwork<-", signature(.object= "cRacipeSE"),
 
                 close(con = con)
 
-                #Generate raveVector and stoichiometry matrix
-                rateVector <- list()
+                #Generate reacttant matrix and stoichiometry matrix
                 allSpecies <- unique(unlist(lapply(reactionList, function(r)
                   c(names(r$reactants), names(r$products)))))
                 nSpecies <- length(allSpecies)
 
                 # Generate reaction names
-                reactionLabels <- character(nReactions)
+                reactionLabels <- character(numReactions)
                 reacIdx <- 1
                 for (i in seq_along(reactionList)) {
                   reactionLabel <- paste0("R", i)
                   reactionLabels[reacIdx] <- reactionLabel
-                  reactantTerms <- unlist(mapply(rep, names(reactionList[[i]]$reactants),
-                                                  reactionList[[i]]$reactants,
-                                                  SIMPLIFY = FALSE))
-                  rateVector[[reactionLabel]] <- if(length(reactantTerms) > 0) reactantTerms else "1"
 
                   if (reactionList[[i]]$reversible) {
                     reverseLabel <- paste0("R", i, "Rev")
                     reactionLabels[reacIdx + 1] <- reverseLabel
-                    reverseTerms <- unlist(mapply(rep, names(reactionList[[i]]$products),
-                                                  reactionList[[i]]$products,
-                                                  SIMPLIFY = FALSE))
-                    rateVector[[reverseLabel]] <- if(length(reverseTerms) > 0) reverseTerms else "1"
 
                     reacIdx <- reacIdx + 1
                   }
                   reacIdx <- reacIdx + 1
                 }
 
-                stoichMatrix <- matrix(0, nrow = length(allSpecies), ncol = nReactions,
+                stoichMatrix <- matrix(0, nrow = length(allSpecies), ncol = numReactions,
                                           dimnames = list(allSpecies, reactionLabels))
+                reactantMatrix <- stoichMatrix
 
                 colIdx <- 1
                 for (r in reactionList) {
@@ -183,6 +176,7 @@ setMethod("cracipeNetwork<-", signature(.object= "cRacipeSE"),
                     prodCoef <- ifelse(species %in% names(r$products), r$products[[species]], 0)
                     reacCoef <- ifelse(species %in% names(r$reactants), r$reactants[[species]], 0)
                     stoichMatrix[species, colIdx] <- prodCoef - reacCoef
+                    reactantMatrix[species, colIdx] <- reacCoef
                   }
                   if (r$reversible) {
                     colIdx <- colIdx + 1
@@ -190,6 +184,7 @@ setMethod("cracipeNetwork<-", signature(.object= "cRacipeSE"),
                       prodCoef <- ifelse(species %in% names(r$reactants), r$reactants[[species]], 0)
                       reacCoef <- ifelse(species %in% names(r$products), r$products[[species]], 0)
                       stoichMatrix[species, colIdx] <- prodCoef - reacCoef
+                      reactantMatrix[species, colIdx] <- reacCoef
                     }
                   }
                   colIdx <- colIdx + 1
@@ -203,10 +198,6 @@ setMethod("cracipeNetwork<-", signature(.object= "cRacipeSE"),
                    xml_document or a file path to a .tpo file")
             }
 
-
-            #Ensure rate vector and stoich matrix correspondence
-            stoichMatrix <- stoichMatrix[, names(rateVector), drop=FALSE]
-
             configData <- NULL
             data("configData",envir = environment(), package = "racipeCRN")
 
@@ -216,11 +207,29 @@ setMethod("cracipeNetwork<-", signature(.object= "cRacipeSE"),
               colData = DataFrame(matrix(NA,nrow = configData$simParams["numModels"],ncol=0)),
               metadata = list(
                 annotation = netID,
-                nReactions = nReactions,
+                numReactions = numReactions,
                 config = configData,
-                rateVector = rateVector)
+                reactantMatrix = reactantMatrix)
             )
             message("network successfully loaded")
             return(.object)
+          }
+)
+
+#' @rdname cracipeParams
+#' @aliases cracipeParams
+setMethod("cracipeParams", signature("cRacipeSE"), function(.object) {
+  return(as(colData(.object)[,seq_len(metadata(.object)$numReactions),drop=FALSE], "data.frame"))
+})
+
+#' @rdname cracipeIC
+#' @aliases cracipeIC
+setMethod(f="cracipeIC",
+          signature="cRacipeSE",
+          definition=function(.object)
+          {
+            numReactions <- metadata(.object)$numReactions
+            return(t(as.data.frame(colData(.object)[,(numReactions+1):
+                                                      (numReactions + length(names(.object)))])))
           }
 )

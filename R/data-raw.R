@@ -17,7 +17,7 @@ NULL
 #' @name wilhelm txt form
 #' @title Small bistable Chemical Reaction Network (tpo)
 #' @examples
-#'  system.file("extdata", "wilhelm.tpo", package = "racipeCRN")
+#' system.file("extdata", "wilhelm.tpo", package = "racipeCRN")
 #' @description This is a small CRN known to be capable of bistability. This
 #' is useful for testing. For further details and the mathematical derivation,
 #' see

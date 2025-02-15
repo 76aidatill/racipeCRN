@@ -22,8 +22,6 @@ networkTopo <- cracipeNetwork(cSet)
 rm(cSet, wilhelm,networkTopo)
 }
 \description{
-This method will return the Stoichiometry matrix in species by
-reaction form and the rate vector as a list where the element for reaction
-"R1" is a character vector of the reactants in reaction "R1", including
-repeats.
+This method will return the Stoichiometry matrix and the
+Reactant coefficient matrix in species by reaction form.
 }

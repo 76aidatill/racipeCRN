@@ -2,10 +2,8 @@
 #' @export
 #' @import SummarizedExperiment
 #' @title Method to get the CRN Stoichiometry Matrix and Rate Vector
-#' @description This method will return the Stoichiometry matrix in species by
-#' reaction form and the rate vector as a list where the element for reaction
-#' "R1" is a character vector of the reactants in reaction "R1", including
-#' repeats.
+#' @description This method will return the Stoichiometry matrix and the
+#' Reactant coefficient matrix in species by reaction form.
 #' @param .object RacipeSE object
 #' @return list of dataframe and list
 #'  @examples
@@ -47,5 +45,46 @@ setGeneric("cracipeNetwork<-",
            def = function(.object, value)
            {
              standardGeneric("cracipeNetwork<-")
+           }
+)
+
+#' @export
+#' @import SummarizedExperiment
+#' @importFrom S4Vectors metadata
+#' @title A method to access the kinetic rate constants for each model in the
+#' ensemble
+#' @description Gets the kinetic rate constants for each model in the form of
+#' a data.frame.
+#' @param .object cRacipeSE object
+#' @examples
+#' wilhelm <- xml2::read_xml(system.file("extdata", "wilhelm.xml", package = "racipeCRN"))
+#' cSet <- cracipeSimulate(wilhelm, integrate = FALSE, numModels=20)
+#' parameters <- cracipeParams(cSet)
+#' rm(parameters,cSet)
+#' @return A  data.frame with numReactions columns and numModels rows.
+#'
+setGeneric("cracipeParams",
+           def = function(.object)
+           {
+             standardGeneric("cracipeParams")
+           }
+)
+
+#' @export
+#' @import SummarizedExperiment
+#' @title  A method to get the initial conditions used for simulations
+#' @description The initial conditions of each of the models.
+#' @param .object cRacipeSE object
+#' @examples
+#' wilhelm <- xml2::read_xml(system.file("extdata", "wilhelm.xml", package = "racipeCRN"))
+#' cSet <- cracipeSimulate(wilhelm, integrate = FALSE, numModels=20)
+#' ic <- cracipeParams(cSet)
+#' rm(ic,cSet)
+#' @return DataFrame with numModels columns and numSpecies rows.
+
+setGeneric("cracipeIC",
+           def = function(.object)
+           {
+             standardGeneric("cracipeIC")
            }
 )

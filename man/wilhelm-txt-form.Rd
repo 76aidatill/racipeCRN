@@ -16,5 +16,5 @@ Wilhelm T. (2009). The smallest chemical reaction system with bistability.
 BMC systems biology, 3, 90. https://doi.org/10.1186/1752-0509-3-90
 }
 \examples{
- system.file("extdata", "wilhelm.tpo", package = "racipeCRN")
+system.file("extdata", "wilhelm.tpo", package = "racipeCRN")
 }
