@@ -15,6 +15,10 @@ cracipeSimulate(
   icMin = 0,
   icMax = 100,
   stepper = "E",
+  integrateStepSize = 0.02,
+  convergThresh = 1e-12,
+  numStepsIteration = 500,
+  numIterations = 25,
   integrate = TRUE,
   genParams = TRUE,
   genIC = TRUE
@@ -52,6 +56,19 @@ for sampling initial conditions.}
 
 \item{stepper}{(optional) character. Default "E". Defines the integration
 method used for simulation. Use "E" for the 1st-Order explicit Euler method.}
+
+\item{integrateStepSize}{(optional) numeric. Default 0.02. step size for
+integration.}
+
+\item{convergThresh}{(optional) numeric. Default \code{1e-12}. The threshold
+for simulation convergence.}
+
+\item{numStepsIteration}{(optional) integer Default \code{500}. The number of
+integration steps between per iteration.}
+
+\item{numIterations}{(optional) integer. Default \code{25}. The total
+number of convergence test iterations to run per model.
+initial condition in deterministic simulations.}
 
 \item{integrate}{(optional) logical. Default \code{TRUE}. Whether to
 integrate the differential equations or not. If \code{FALSE}, the function

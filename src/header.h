@@ -30,5 +30,20 @@ double sum_delta (std::vector<double> &exprx1,
 double cal_norm(std::vector<double> &vector, 
                 const int &numberReactions);
 
+void runStepper(std::vector<double> &speciesConc,
+                std::ofstream &outSC,
+                std::ofstream &outConv,
+                const size_t &outputPrecision,
+                const size_t &numberReactions,
+                const size_t &numberSpecies,
+                const double &h,
+                const double &convergThresh,
+                const int &numStepsIteration,
+                const int &numIterations,
+                const int &stepper,
+                std::vector<double> &kConst,
+                Rcpp::IntegerMatrix reactantMatrix,
+                Rcpp::IntegerMatrix stoichMatrix);
+
 
 #endif

@@ -29,6 +29,15 @@
 #' for sampling initial conditions.
 #' @param stepper (optional) character. Default "E". Defines the integration
 #' method used for simulation. Use "E" for the 1st-Order explicit Euler method.
+#' @param integrateStepSize (optional) numeric. Default 0.02. step size for
+#' integration.
+#' @param convergThresh (optional) numeric. Default \code{1e-12}. The threshold
+#' for simulation convergence.
+#' @param numStepsIteration (optional) integer Default \code{500}. The number of
+#' integration steps between per iteration.
+#' @param numIterations (optional) integer. Default \code{25}. The total
+#' number of convergence test iterations to run per model.
+#' initial condition in deterministic simulations.
 #' @param integrate (optional) logical. Default \code{TRUE}. Whether to
 #' integrate the differential equations or not. If \code{FALSE}, the function
 #' will only generate the parameters and initial conditions. This can be used
@@ -55,7 +64,9 @@
 cracipeSimulate <- function(network, config = config, numModels = 2000,
                             numIC = 1, outputPrecision = 12,
                             kMin = 0, kMax = 10, icMin = 0, icMax = 100,
-                            stepper = "E",
+                            stepper = "E", integrateStepSize = 0.02,
+                            convergThresh = 1e-12, numStepsIteration = 500,
+                            numIterations = 25,
                             integrate = TRUE, genParams = TRUE, genIC = TRUE){
   cSet <- cRacipeSE()
   metadataTmp <- metadata(cSet)
@@ -100,6 +111,18 @@ cracipeSimulate <- function(network, config = config, numModels = 2000,
   if(!missing(outputPrecision)){
     configuration$simParams["outputPrecision"] <- outputPrecision
   }
+  if(!missing(integrateStepSize)){
+    configuration$simParams["integrateStepSize"] <- integrateStepSize
+  }
+  if(!missing(convergThresh)){
+    configuration$simParams["convergThresh"] <- convergThresh
+  }
+  if(!missing(numStepsIteration)){
+    configuration$simParams["numStepsIteration"] <- numStepsIteration
+  }
+  if(!missing(numIterations)){
+    configuration$simParams["numIterations"] <- numIterations
+  }
   if(!missing(kMin)){
     configuration$hyperParams["kMin"] <- kMin
   }
@@ -121,6 +144,20 @@ cracipeSimulate <- function(network, config = config, numModels = 2000,
   if(!missing(genIC)){
     configuration$options["genIC"] <- genIC
   }
+
+
+  configuration$stepper <- stepper
+  stepperInt <- 1L
+
+  numSpecies <- length(cSet)
+  stoichMatrix <- as.matrix(rowData(cSet))
+  reactantMatrix <- as.matrix(metadataTmp$reactantMatrix)
+  speciesNames <- names(cSet)
+
+  outFileSC <- tempfile(fileext = ".txt") #File for species concentration
+  outFileParams <- tempfile(fileext = ".txt")
+  outFileIC <- tempfile(fileext = ".txt")
+  outFileConverge <- tempfile(fileext = ".txt")
 
   if(!genParams){
     if(is.null(colData(cSet))){
@@ -147,20 +184,6 @@ cracipeSimulate <- function(network, config = config, numModels = 2000,
     }
   }
 
-  configuration$stepper <- stepper
-  stepperInt <- 1L
-
-  numSpecies <- length(cSet)
-  stoichMatrix <- as.matrix(rowData(cSet))
-  reactantMatrix <- as.matrix(metadataTmp$reactantMatrix)
-  speciesNames <- names(cSet)
-
-  outFileSC <- tempfile(fileext = ".txt") #File for species concentration
-  outFileParams <- tempfile(fileext = ".txt")
-  outFileIC <- tempfile(fileext = ".txt")
-  outFileConverge <- tempfile(fileext = ".txt")
-
-
 
   annotationTmp <- outFileSC
   message("Running the simulations")
@@ -170,10 +193,39 @@ cracipeSimulate <- function(network, config = config, numModels = 2000,
                                    outFileConverge, stepperInt)
 
   if(configuration$options["integrate"]){
-    print("INTEGRATION NOT CURRENTLY AVAILABLE")
-    return(cSet)
-  } else {
+    speciesConcentration <- utils::read.table(outFileSC, header = FALSE)
+    speciesConcentration <- t(speciesConcentration)
+    rownames(speciesConcentration) <- speciesNames
+    assayDataTmp <- list(speciesConcentration)
+
+    #Checking if any models had problematic results
+    if(!all(!(is.na(speciesConcentration)))){
+      message("\n")
+      message("NaN in expression data. Likely due to stiff equations. Try lowering step size to fix it.")
+    }
+    else if(!all(speciesConcentration >= 0)){
+      message("\n")
+      message("Negative vals in expression data. Likely due to stiff equations. Try lowering step size to fix it.")
+    }
+
+    paramNames <- cracipeGenParamNames(cSet)
     parameters <- utils::read.table(outFileParams, header = FALSE)
+    colnames(parameters) <- paramNames
+
+    ic <- utils::read.table(outFileIC, header = FALSE)
+    colnames(ic) <- speciesNames
+
+    metadataTmp$config <- configuration
+
+    converge<- utils::read.table(outFileConverge, header = FALSE)
+    colnames(converge)<-c("Model Convergence", "Tests Done")
+
+    colData <- (cbind(parameters, ic, converge))
+
+  } else {
+    paramNames <- cracipeGenParamNames(cSet)
+    parameters <- utils::read.table(outFileParams, header = FALSE)
+    colnames(parameters) <- paramNames
 
     ic <- utils::read.table(outFileIC, header = FALSE)
     colnames(ic) <- speciesNames
@@ -186,4 +238,9 @@ cracipeSimulate <- function(network, config = config, numModels = 2000,
                      metadata = metadataTmp)
     return(cSet)
   }
+
+  cSet <- cRacipeSE(rowData = stoichMatrix, colData = colData,
+                   assays =  assayDataTmp,
+                   metadata = metadataTmp)
+  return(cSet)
 }

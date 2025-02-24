@@ -32,6 +32,10 @@ int simulateCRN(Rcpp::IntegerMatrix stoichMatrix,
     size_t numModels = static_cast<size_t>(simulationParameters[0]);
     size_t numIC = static_cast<size_t> (simulationParameters[1]);
     size_t outputPrecision = static_cast<size_t> (simulationParameters[2]);
+    double h = static_cast<double> (simulationParameters[3]);
+    double convergThresh = static_cast<double> (simulationParameters[4]);
+    int numStepsIteration = static_cast<int> (simulationParameters[5]);
+    int numIterations = static_cast<int> (simulationParameters[6]);
 
     double kMin = hyperParameters[0];
     double kMax = hyperParameters[1];
@@ -145,8 +149,12 @@ int simulateCRN(Rcpp::IntegerMatrix stoichMatrix,
                 }
 
                 if(integrate){
-                    //ADD INTEGRATION LATER
-                    Rcout << "Integration currently unavailable";
+                    runStepper(concSpecies,
+                      outSC, outConv, outputPrecision,
+                      numberReactions, numberSpecies,
+                      h, convergThresh, numStepsIteration,
+                      numIterations, stepper, kConst,
+                      reactantMatrix, stoichMatrix);
                 }
 
                 outSC<<"\n";
