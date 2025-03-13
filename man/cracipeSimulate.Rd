@@ -21,7 +21,10 @@ cracipeSimulate(
   numIterations = 25,
   integrate = TRUE,
   genParams = TRUE,
-  genIC = TRUE
+  genIC = TRUE,
+  plots = FALSE,
+  plotToFile = FALSE,
+  normalized = FALSE
 )
 }
 \arguments{
@@ -57,7 +60,7 @@ for sampling initial conditions.}
 \item{stepper}{(optional) character. Default "E". Defines the integration
 method used for simulation. Use "E" for the 1st-Order explicit Euler method.}
 
-\item{integrateStepSize}{(optional) numeric. Default 0.02. step size for
+\item{integrateStepSize}{(optional) numeric. Default \code{0.001}. step size for
 integration.}
 
 \item{convergThresh}{(optional) numeric. Default \code{1e-12}. The threshold
@@ -66,7 +69,7 @@ for simulation convergence.}
 \item{numStepsIteration}{(optional) integer Default \code{500}. The number of
 integration steps between per iteration.}
 
-\item{numIterations}{(optional) integer. Default \code{25}. The total
+\item{numIterations}{(optional) integer. Default \code{150}. The total
 number of convergence test iterations to run per model.
 initial condition in deterministic simulations.}
 
@@ -84,6 +87,16 @@ network should be a cRacipeSE object with preexisting parameters to use.}
 generate initial conditions for each model. If set to \code{FALSE}, the
 network should be a cRacipeSE object with preexisting initial conditions to
 use.}
+
+\item{plots}{(optional) logical. Default \code{FALSE}. Whether or not to
+plot the simulated data using \code{\link{cracipePlotData}} and
+\code{\link{cracipeConvergeDist}}.}
+
+\item{plotToFile}{(optional) logical. Default \code{FALSE}. Whether or not
+to save the plots to a file.}
+
+\item{normalized}{(optional) logical. Default \code{FALSE}. Whether or not
+to noemalized the concentration values.}
 }
 \value{
 cRacipeSE object

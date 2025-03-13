@@ -1,0 +1,12 @@
+1 R1I <-> 1 R1
+1 R2 <-> 1 R2I
+1 R2 1 R1I <-> 1 Rstar
+1 Rstar <-> 1 R1 1 R2I
+1 Rstar 1 S2 <-> 1 RstarS2star
+1 RstarS2star -> 1 Rstar 1 S2star
+1 RstarS2star 1 S1 -> 1 RstarS2starS1star
+1 RstarS2starS1star -> 1 RstarS2star 1 S1star
+2 S1star -> 1 S1starS1star
+1 S1starS1star -> 2 S1
+1 S1star 1 S2star -> 1 S1starS2star
+1 S1starS2star -> 1 S1 1 S2

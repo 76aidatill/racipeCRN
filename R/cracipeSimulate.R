@@ -29,13 +29,13 @@
 #' for sampling initial conditions.
 #' @param stepper (optional) character. Default "E". Defines the integration
 #' method used for simulation. Use "E" for the 1st-Order explicit Euler method.
-#' @param integrateStepSize (optional) numeric. Default 0.02. step size for
+#' @param integrateStepSize (optional) numeric. Default \code{0.001}. step size for
 #' integration.
 #' @param convergThresh (optional) numeric. Default \code{1e-12}. The threshold
 #' for simulation convergence.
 #' @param numStepsIteration (optional) integer Default \code{500}. The number of
 #' integration steps between per iteration.
-#' @param numIterations (optional) integer. Default \code{25}. The total
+#' @param numIterations (optional) integer. Default \code{150}. The total
 #' number of convergence test iterations to run per model.
 #' initial condition in deterministic simulations.
 #' @param integrate (optional) logical. Default \code{TRUE}. Whether to
@@ -50,6 +50,13 @@
 #' generate initial conditions for each model. If set to \code{FALSE}, the
 #' network should be a cRacipeSE object with preexisting initial conditions to
 #' use.
+#' @param plots (optional) logical. Default \code{FALSE}. Whether or not to
+#' plot the simulated data using \code{\link{cracipePlotData}} and
+#' \code{\link{cracipeConvergeDist}}.
+#' @param plotToFile (optional) logical. Default \code{FALSE}. Whether or not
+#' to save the plots to a file.
+#' @param normalized (optional) logical. Default \code{FALSE}. Whether or not
+#' to noemalized the concentration values.
 #'
 #' @return cRacipeSE object
 #' @examples
@@ -67,7 +74,9 @@ cracipeSimulate <- function(network, config = config, numModels = 2000,
                             stepper = "E", integrateStepSize = 0.02,
                             convergThresh = 1e-12, numStepsIteration = 500,
                             numIterations = 25,
-                            integrate = TRUE, genParams = TRUE, genIC = TRUE){
+                            integrate = TRUE, genParams = TRUE, genIC = TRUE,
+                            plots = FALSE, plotToFile = FALSE,
+                            normalized = FALSE){
   cSet <- cRacipeSE()
   metadataTmp <- metadata(cSet)
   configData <- NULL
@@ -144,6 +153,16 @@ cracipeSimulate <- function(network, config = config, numModels = 2000,
   if(!missing(genIC)){
     configuration$options["genIC"] <- genIC
   }
+  if(!missing(plots)){
+    configuration$options["plots"] <- plots
+  }
+  if(!missing(plotToFile)){
+    configuration$options["plotToFile"] <- plotToFile
+  }
+  if(!missing(normalized)){
+    configuration$options["normalized"] <- normalized
+  }
+
 
 
   configuration$stepper <- stepper
@@ -200,11 +219,9 @@ cracipeSimulate <- function(network, config = config, numModels = 2000,
 
     #Checking if any models had problematic results
     if(!all(!(is.na(speciesConcentration)))){
-      message("\n")
       message("NaN in expression data. Likely due to stiff equations. Try lowering step size to fix it.")
     }
     else if(!all(speciesConcentration >= 0)){
-      message("\n")
       message("Negative vals in expression data. Likely due to stiff equations. Try lowering step size to fix it.")
     }
 
@@ -242,5 +259,14 @@ cracipeSimulate <- function(network, config = config, numModels = 2000,
   cSet <- cRacipeSE(rowData = stoichMatrix, colData = colData,
                    assays =  assayDataTmp,
                    metadata = metadataTmp)
+
+  if(normalized){
+    cSet <- cracipeNormalize(cSet)
+  }
+  if(plots){
+    cSet <- cracipePlotData(cSet, plotToFile = plotToFile, ...)
+    cSet <- cracipeConvergeDist(cSet, plotToFile = plotToFile)
+  }
+
   return(cSet)
 }
