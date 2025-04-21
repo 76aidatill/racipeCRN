@@ -64,6 +64,66 @@ void simIterE(const size_t &numberReactions,
     
 }
 
+//Use the RK4 method to simulate an iteration
+void simIterRK4(const size_t &numberReactions,
+    const size_t &numberSpecies,
+    const double &h,
+    const int &numStepsIteration,
+    std::vector<double> &speciesConc,
+    std::vector<double> &kConst,
+    Rcpp::IntegerMatrix reactantMatrix,
+    Rcpp::IntegerMatrix stoichMatrix){
+
+//Create reaction vector and derivative vector for each substep
+std::vector<double> reactVector(numberReactions, 0.0);
+std::vector<double> derivVec1(numberSpecies, 0.0);
+std::vector<double> derivVec2(numberSpecies, 0.0);
+std::vector<double> derivVec3(numberSpecies, 0.0);
+std::vector<double> derivVec4(numberSpecies, 0.0);
+
+//Create temp conc vectors for each substep after the first
+std::vector<double> tempConc2(numberSpecies, 0.0);
+std::vector<double> tempConc3(numberSpecies, 0.0);
+std::vector<double> tempConc4(numberSpecies, 0.0);
+
+for(int step=0; step<numStepsIteration; step++){
+    calcDeriv(numberReactions, numberSpecies, speciesConc, derivVec1,
+        reactVector, kConst, reactantMatrix, stoichMatrix);
+
+    for(size_t speciesCount=1; speciesCount<numberSpecies; speciesCount++){
+        tempConc2[speciesCount] = speciesConc[speciesCount] + 
+                                    derivVec1[speciesCount]*h*0.5;
+    }
+    calcDeriv(numberReactions, numberSpecies, tempConc2, derivVec2,
+        reactVector, kConst, reactantMatrix, stoichMatrix);
+    
+    for(size_t speciesCount=1; speciesCount<numberSpecies; speciesCount++){
+        tempConc3[speciesCount] = speciesConc[speciesCount] + 
+                                    derivVec2[speciesCount]*h*0.5;
+    }
+    calcDeriv(numberReactions, numberSpecies, tempConc3, derivVec3,
+        reactVector, kConst, reactantMatrix, stoichMatrix);
+    
+    for(size_t speciesCount=1; speciesCount<numberSpecies; speciesCount++){
+        tempConc4[speciesCount] = speciesConc[speciesCount] + 
+                                    derivVec3[speciesCount]*h;
+    }
+    calcDeriv(numberReactions, numberSpecies, tempConc4, derivVec4,
+        reactVector, kConst, reactantMatrix, stoichMatrix);
+
+    for(size_t i=0; i<numberSpecies; i++){
+        speciesConc[i] = speciesConc[i] + h*(derivVec1[i] + 2*derivVec2[i]
+                                            + 2*derivVec3[i] + derivVec4[i])/6;
+        //Reset derivative vectors for next step
+        derivVec1[i] = 0.0;
+        derivVec2[i] = 0.0;
+        derivVec3[i] = 0.0;
+        derivVec4[i] = 0.0;
+    }
+}
+
+}
+
 //Run iterations and report concentrations and convergence data
 void runStepper(std::vector<double> &speciesConc,
         std::ofstream &outSC,
@@ -93,6 +153,12 @@ void runStepper(std::vector<double> &speciesConc,
             // Euler Method
             simIterE(numberReactions, numberSpecies, h, numStepsIteration,
                     speciesConc, kConst, reactantMatrix, stoichMatrix);
+            break;
+
+            case 4:
+            // Runge-Kutta 4 method
+            simIterRK4(numberReactions, numberSpecies, h, numStepsIteration,
+                speciesConc, kConst, reactantMatrix, stoichMatrix);
             break;
 
             default:

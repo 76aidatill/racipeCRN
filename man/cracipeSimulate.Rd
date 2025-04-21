@@ -14,7 +14,7 @@ cracipeSimulate(
   kMax = 10,
   icMin = 0,
   icMax = 100,
-  stepper = "E",
+  stepper = "RK4",
   integrateStepSize = 0.02,
   convergThresh = 1e-12,
   numStepsIteration = 500,
@@ -57,8 +57,9 @@ for sampling initial conditions.}
 \item{icMax}{(optional) numeric. Default 100. Maximum of uniform distribution
 for sampling initial conditions.}
 
-\item{stepper}{(optional) character. Default "E". Defines the integration
-method used for simulation. Use "E" for the 1st-Order explicit Euler method.}
+\item{stepper}{(optional) character. Default "RK4". Defines the integration
+method used for simulation. Use "E" for the 1st-Order explicit Euler method.
+Use "RK4" for the fourth-order Runge-Kutta method.}
 
 \item{integrateStepSize}{(optional) numeric. Default \code{0.001}. step size for
 integration.}

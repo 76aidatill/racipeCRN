@@ -27,8 +27,9 @@
 #' for sampling initial conditions.
 #' @param icMax (optional) numeric. Default 100. Maximum of uniform distribution
 #' for sampling initial conditions.
-#' @param stepper (optional) character. Default "E". Defines the integration
+#' @param stepper (optional) character. Default "RK4". Defines the integration
 #' method used for simulation. Use "E" for the 1st-Order explicit Euler method.
+#' Use "RK4" for the fourth-order Runge-Kutta method.
 #' @param integrateStepSize (optional) numeric. Default \code{0.001}. step size for
 #' integration.
 #' @param convergThresh (optional) numeric. Default \code{1e-12}. The threshold
@@ -71,7 +72,7 @@
 cracipeSimulate <- function(network, config = config, numModels = 2000,
                             numIC = 1, outputPrecision = 12,
                             kMin = 0, kMax = 10, icMin = 0, icMax = 100,
-                            stepper = "E", integrateStepSize = 0.02,
+                            stepper = "RK4", integrateStepSize = 0.02,
                             convergThresh = 1e-12, numStepsIteration = 500,
                             numIterations = 25,
                             integrate = TRUE, genParams = TRUE, genIC = TRUE,
@@ -167,6 +168,7 @@ cracipeSimulate <- function(network, config = config, numModels = 2000,
 
   configuration$stepper <- stepper
   stepperInt <- 1L
+  if(configuration$stepper == "RK4"){ stepperInt <- 4L}
 
   numSpecies <- length(cSet)
   stoichMatrix <- as.matrix(rowData(cSet))
