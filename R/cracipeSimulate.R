@@ -62,7 +62,7 @@
 #' @return cRacipeSE object
 #' @examples
 #' wilhelm <- system.file("extdata", "wilhelm.tpo", package = "racipeCRN")
-#' cSet <- cracipeSimulate(wilhelm)
+#' cSet <- cracipeSimulate(wilhelm, numModels = 100)
 #'
 #' @section Related Functions:
 #'
@@ -266,7 +266,7 @@ cracipeSimulate <- function(network, config = config, numModels = 2000,
     cSet <- cracipeNormalize(cSet)
   }
   if(plots){
-    cSet <- cracipePlotData(cSet, plotToFile = plotToFile, ...)
+    cSet <- cracipePlotData(cSet, plotToFile = plotToFile,...)
     cSet <- cracipeConvergeDist(cSet, plotToFile = plotToFile)
   }
 

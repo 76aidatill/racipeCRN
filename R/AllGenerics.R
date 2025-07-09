@@ -61,7 +61,7 @@ setGeneric("cracipeNetwork<-",
 #' cSet <- cracipeSimulate(wilhelm, integrate = FALSE, numModels=20)
 #' parameters <- cracipeParams(cSet)
 #' rm(parameters,cSet)
-#' @return A  data.frame with numReactions columns and numModels rows.
+#' @return A data.frame with numReactions columns and numModels rows.
 #'
 setGeneric("cracipeParams",
            def = function(.object)
@@ -69,6 +69,30 @@ setGeneric("cracipeParams",
              standardGeneric("cracipeParams")
            }
 )
+
+#' @export
+#' @title  A method to set the ensemble kinetic parameters
+#' @description Set the parameters
+#' @param .object cRacipeSE object
+#' @param value DataFrame containing the parameters. Dimensions should be
+#' (numModels) rows by (numReactions) columns.
+#' @examples
+#' wilhelm <- xml2::read_xml(system.file("extdata", "wilhelm.xml", package = "racipeCRN"))
+#' cSet <- racipeCRN::cracipeSimulate(network = wilhelm, numModels = 20,
+#' integrate = FALSE)
+#' parameters <- cracipeParams(cSet)
+#' cracipeParams(cSet) <- parameters
+#' rm(parameters, cSet)
+#' @return A cRacipeSE object
+#'
+
+setGeneric("cracipeParams<-",
+           def = function(.object, value)
+           {
+             standardGeneric("cracipeParams<-")
+           }
+)
+
 
 #' @export
 #' @import SummarizedExperiment
@@ -86,6 +110,29 @@ setGeneric("cracipeIC",
            def = function(.object)
            {
              standardGeneric("cracipeIC")
+           }
+)
+
+#' @export
+#' @import SummarizedExperiment
+#' @title  A method to set the initial conditions
+#' @description Set the initial conditions
+#' @param .object cRacipeSE object
+#' @param value DataFrame containing the initial conditions, dimensions should
+#' be (# species) rows by (numModels*numIC) columns
+#' @examples
+#' wilhelm <- xml2::read_xml(system.file("extdata", "wilhelm.xml", package = "racipeCRN"))
+#' cSet <- racipeCRN::cracipeSimulate(network = wilhelm, numModels = 10,
+#' integrate=FALSE)
+#' ics <- cracipeIC(cSet)
+#' cracipeIC(cSet) <- ics
+#' rm(cSet, ics)
+#' @return A cRacipeSE object
+
+setGeneric("cracipeIC<-",
+           def = function(.object, value)
+           {
+             standardGeneric("cracipeIC<-")
            }
 )
 

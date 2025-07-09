@@ -240,6 +240,19 @@ setMethod("cracipeParams", signature("cRacipeSE"), function(.object) {
   return(as(colData(.object)[,seq_len(metadata(.object)$numReactions),drop=FALSE], "data.frame"))
 })
 
+#' @rdname cracipeParams-set
+#' @aliases cracipeParams-set
+setMethod(f="cracipeParams<-",
+          signature="cRacipeSE",
+          definition=function(.object, value)
+          {
+            colData(.object)[,seq_len(metadata(.object)$numReactions)] <-
+              S4Vectors::DataFrame(value)
+            return(.object)
+          }
+
+)
+
 #' @rdname cracipeIC
 #' @aliases cracipeIC
 setMethod(f="cracipeIC",
@@ -249,6 +262,19 @@ setMethod(f="cracipeIC",
             numReactions <- metadata(.object)$numReactions
             return(t(as.data.frame(colData(.object)[,(numReactions+1):
                                                       (numReactions + length(names(.object)))])))
+          }
+)
+#' @rdname cracipeIC-set
+#' @aliases cracipeIC-set
+setMethod(f="cracipeIC<-",
+          signature="cRacipeSE",
+          definition=function(.object, value)
+          {
+            numReactions <- metadata(.object)$numReactions
+            value <- t(value)
+            colData(.object)[,(numReactions + 1):
+                               (numReactions + length(names(.object)))] <- S4Vectors::DataFrame(value)
+            return(.object)
           }
 )
 

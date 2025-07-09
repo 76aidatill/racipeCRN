@@ -14,7 +14,7 @@ cracipeParams(.object)
 \item{.object}{cRacipeSE object}
 }
 \value{
-A  data.frame with numReactions columns and numModels rows.
+A data.frame with numReactions columns and numModels rows.
 }
 \description{
 Gets the kinetic rate constants for each model in the form of
