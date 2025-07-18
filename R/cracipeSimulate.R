@@ -62,7 +62,7 @@
 #' @return cRacipeSE object
 #' @examples
 #' wilhelm <- system.file("extdata", "wilhelm.tpo", package = "racipeCRN")
-#' cSet <- cracipeSimulate(wilhelm, numModels = 100)
+#' cSet <- cracipeSimulate(wilhelm, numModels = 10)
 #'
 #' @section Related Functions:
 #'

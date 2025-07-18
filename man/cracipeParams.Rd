@@ -22,7 +22,7 @@ a data.frame.
 }
 \examples{
 wilhelm <- xml2::read_xml(system.file("extdata", "wilhelm.xml", package = "racipeCRN"))
-cSet <- cracipeSimulate(wilhelm, integrate = FALSE, numModels=20)
+cSet <- cracipeSimulate(wilhelm, integrate = FALSE, numModels=10)
 parameters <- cracipeParams(cSet)
 rm(parameters,cSet)
 }

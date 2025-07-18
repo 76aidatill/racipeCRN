@@ -43,6 +43,6 @@ matrix-like elements correspond to various species in the circuit and columns
 correspond to models.
 }
 \examples{
-rSet <- cRacipeSE()
+cSet <- cRacipeSE()
 
 }

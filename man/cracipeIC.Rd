@@ -20,7 +20,7 @@ The initial conditions of each of the models.
 }
 \examples{
 wilhelm <- xml2::read_xml(system.file("extdata", "wilhelm.xml", package = "racipeCRN"))
-cSet <- cracipeSimulate(wilhelm, integrate = FALSE, numModels=20)
+cSet <- cracipeSimulate(wilhelm, integrate = FALSE, numModels=10)
 ic <- cracipeParams(cSet)
 rm(ic,cSet)
 }

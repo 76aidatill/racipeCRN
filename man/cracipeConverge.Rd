@@ -21,7 +21,7 @@ and initial condition.
 }
 \examples{
 wilhelm <- xml2::read_xml(system.file("extdata", "wilhelm.xml", package = "racipeCRN"))
-cSet <- racipeCRN::cracipeSimulate(network = wilhelm, numModels = 200, numIC = 5)
+cSet <- racipeCRN::cracipeSimulate(network = wilhelm, numModels = 100, numIC = 3)
 cd <- cracipeConverge(cSet)
 rm(cSet, cd)
 }

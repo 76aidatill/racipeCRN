@@ -1,15 +1,16 @@
 
 #' @export
 #' @import SummarizedExperiment
-#' @title Method to get the CRN Stoichiometry Matrix and Rate Vector
+#' @title Method to get the complete CRN in matrix form
 #' @description This method will return the Stoichiometry matrix and the
-#' Reactant coefficient matrix in species by reaction form.
-#' @param .object RacipeSE object
-#' @return list of dataframe and list
-#'  @examples
+#' Reactant coefficient matrix in species by reaction form. These two matrices
+#' completely define the CRN with mass-action kinetics
+#' @param .object cRacipeSE object
+#' @return list of dataframes
+#' @examples
 #' cSet <- cRacipeSE()
 #' wilhelm <- xml2::read_xml(system.file("extdata", "wilhelm.xml", package = "racipeCRN"))
-#' cracipeNetwork(rs) <- wilhelm
+#' cracipeNetwork(cSet) <- wilhelm
 #' networkTopo <- cracipeNetwork(cSet)
 #' rm(cSet, wilhelm,networkTopo)
 #'
@@ -58,7 +59,7 @@ setGeneric("cracipeNetwork<-",
 #' @param .object cRacipeSE object
 #' @examples
 #' wilhelm <- xml2::read_xml(system.file("extdata", "wilhelm.xml", package = "racipeCRN"))
-#' cSet <- cracipeSimulate(wilhelm, integrate = FALSE, numModels=20)
+#' cSet <- cracipeSimulate(wilhelm, integrate = FALSE, numModels=10)
 #' parameters <- cracipeParams(cSet)
 #' rm(parameters,cSet)
 #' @return A data.frame with numReactions columns and numModels rows.
@@ -78,7 +79,7 @@ setGeneric("cracipeParams",
 #' (numModels) rows by (numReactions) columns.
 #' @examples
 #' wilhelm <- xml2::read_xml(system.file("extdata", "wilhelm.xml", package = "racipeCRN"))
-#' cSet <- racipeCRN::cracipeSimulate(network = wilhelm, numModels = 20,
+#' cSet <- racipeCRN::cracipeSimulate(network = wilhelm, numModels = 10,
 #' integrate = FALSE)
 #' parameters <- cracipeParams(cSet)
 #' cracipeParams(cSet) <- parameters
@@ -101,7 +102,7 @@ setGeneric("cracipeParams<-",
 #' @param .object cRacipeSE object
 #' @examples
 #' wilhelm <- xml2::read_xml(system.file("extdata", "wilhelm.xml", package = "racipeCRN"))
-#' cSet <- cracipeSimulate(wilhelm, integrate = FALSE, numModels=20)
+#' cSet <- cracipeSimulate(wilhelm, integrate = FALSE, numModels=10)
 #' ic <- cracipeParams(cSet)
 #' rm(ic,cSet)
 #' @return DataFrame with numModels columns and numSpecies rows.
@@ -167,7 +168,7 @@ setGeneric(name="cracipeConfig",
 
 #' @examples
 #' wilhelm <- xml2::read_xml(system.file("extdata", "wilhelm.xml", package = "racipeCRN"))
-#' cSet <- racipeCRN::cracipeSimulate(network = wilhelm, numModels = 200, numIC = 5)
+#' cSet <- racipeCRN::cracipeSimulate(network = wilhelm, numModels = 100, numIC = 3)
 #' cd <- cracipeConverge(cSet)
 #' rm(cSet, cd)
 #' @return DataFrame

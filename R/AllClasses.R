@@ -34,7 +34,7 @@
 #' @param ... Arguments passed to SummarizedExperiment
 #' @return cRacipeSE object
 #' @examples
-#' rSet <- cRacipeSE()
+#' cSet <- cRacipeSE()
 #'
 
 cRacipeSE <- function(.object = NULL, assays = SimpleList(),

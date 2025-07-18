@@ -115,6 +115,6 @@ generated.
 
 \examples{
 wilhelm <- system.file("extdata", "wilhelm.tpo", package = "racipeCRN")
-cSet <- cracipeSimulate(wilhelm, numModels = 100)
+cSet <- cracipeSimulate(wilhelm, numModels = 10)
 
 }

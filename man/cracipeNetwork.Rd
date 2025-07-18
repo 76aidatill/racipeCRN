@@ -3,25 +3,28 @@
 \name{cracipeNetwork}
 \alias{cracipeNetwork}
 \alias{cracipeNetwork,cRacipeSE-method}
-\title{Method to get the CRN Stoichiometry Matrix and Rate Vector}
+\title{Method to get the complete CRN in matrix form}
 \usage{
 cracipeNetwork(.object)
 
 \S4method{cracipeNetwork}{cRacipeSE}(.object)
 }
 \arguments{
-\item{.object}{RacipeSE object}
+\item{.object}{cRacipeSE object}
 }
 \value{
-list of dataframe and list
-@examples
-cSet <- cRacipeSE()
-wilhelm <- xml2::read_xml(system.file("extdata", "wilhelm.xml", package = "racipeCRN"))
-cracipeNetwork(rs) <- wilhelm
-networkTopo <- cracipeNetwork(cSet)
-rm(cSet, wilhelm,networkTopo)
+list of dataframes
 }
 \description{
 This method will return the Stoichiometry matrix and the
-Reactant coefficient matrix in species by reaction form.
+Reactant coefficient matrix in species by reaction form. These two matrices
+completely define the CRN with mass-action kinetics
+}
+\examples{
+cSet <- cRacipeSE()
+wilhelm <- xml2::read_xml(system.file("extdata", "wilhelm.xml", package = "racipeCRN"))
+cracipeNetwork(cSet) <- wilhelm
+networkTopo <- cracipeNetwork(cSet)
+rm(cSet, wilhelm,networkTopo)
+
 }

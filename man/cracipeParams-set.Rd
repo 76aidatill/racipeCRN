@@ -24,7 +24,7 @@ Set the parameters
 }
 \examples{
 wilhelm <- xml2::read_xml(system.file("extdata", "wilhelm.xml", package = "racipeCRN"))
-cSet <- racipeCRN::cracipeSimulate(network = wilhelm, numModels = 20,
+cSet <- racipeCRN::cracipeSimulate(network = wilhelm, numModels = 10,
 integrate = FALSE)
 parameters <- cracipeParams(cSet)
 cracipeParams(cSet) <- parameters

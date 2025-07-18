@@ -162,7 +162,7 @@ setMethod("cracipeNetwork<-", signature(.object= "cRacipeSE"),
 
                 close(con = con)
 
-                #Generate reacttant matrix and stoichiometry matrix
+                #Generate reactant matrix and stoichiometry matrix
                 allSpecies <- unique(unlist(lapply(reactionList, function(r)
                   c(names(r$reactants), names(r$products)))))
                 nSpecies <- length(allSpecies)
@@ -328,16 +328,28 @@ setMethod(f="cracipeUniqueStates",
               finalModelExpressions <- speciesConc[, startIdx:endIdx]
               #filters out non-converging states
               ICconvergences <- converge[startIdx:endIdx, 1]
-              convergedICs <- finalModelExpressions[, as.logical(ICconvergences)]
 
-              if(!is.null(ncol(convergedICs))){
-                #Taking unique states up until roundDigits
-                uniqueIdx <- which(!(duplicated(round(convergedICs, digits = roundDigits), MARGIN = 2)))
-                uniqueExprx <- convergedICs[,uniqueIdx]
-                uniqueConcList[[modelCount]] <- as.data.frame(uniqueExprx)
-              }else{
-                uniqueConcList[[modelCount]] <- data.frame()
+              #Handle case where only one condition converged
+              if(methods::is(finalModelExpressions, "numeric")){
+                if(ICconvergences ==1){
+                  uniqueConcList[[modelCount]] <- as.data.frame(finalModelExpressions)
+
+                } else{
+                  uniqueConcList[[modelCount]] <- data.frame()
+                }
+              } else{
+                convergedICs <- finalModelExpressions[, as.logical(ICconvergences)]
+
+                if(!is.null(ncol(convergedICs))){
+                  #Taking unique states up until roundDigits
+                  uniqueIdx <- which(!(duplicated(round(convergedICs, digits = roundDigits), MARGIN = 2)))
+                  uniqueExprx <- convergedICs[,uniqueIdx]
+                  uniqueConcList[[modelCount]] <- as.data.frame(uniqueExprx)
+                }else{
+                  uniqueConcList[[modelCount]] <- data.frame()
+                }
               }
+
             }
             return(uniqueConcList)
           }
