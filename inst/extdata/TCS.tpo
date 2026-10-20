@@ -1,0 +1,8 @@
+1 SK <-> 1 SK_P
+1 SK 1 RR <-> 1 SK_RR
+1 SK_P 1 RR <-> 1 SK_P_RR
+1 SK_P_RR -> 1 SK_RR_P
+1 SK_RR_P -> 1 SK_RR 
+1 SK_RR_P <-> 1 SK 1 RR_P
+1 Ph 1 RR_P <-> 1 Ph_RR_P
+1 Ph_RR_P -> 1 Ph 1 RR
