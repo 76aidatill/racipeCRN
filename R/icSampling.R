@@ -118,8 +118,11 @@ cracipeSample <- function(network, classPoint = NULL, numModels = 2000, numIC=1,
     hspaceDim <- dim(stoichSubspace)[[2]]
 
     if(!sameClass){
-      classPoints <- matrix(runif(n=numModels*numSpecies, min = 0, max = lambda),
+      if(is.null(classPoint)){
+        classPoints <- matrix(runif(n=numModels*numSpecies, min = 0, max = lambda),
                               nrow = numSpecies, ncol = numModels)
+      }
+
       uniformVSampling <- list()
 
       for(i in seq_len(numModels)){
